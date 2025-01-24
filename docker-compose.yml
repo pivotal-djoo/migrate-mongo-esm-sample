@@ -1,0 +1,14 @@
+services:
+  mongodb:
+    image: mongo:4.2
+    container_name: local_mongo
+    ports:
+      - '27017:27017' # Exposes MongoDB on port 27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
+    volumes:
+      - mongodb_data:/data/db # Persist database data across container restarts
+
+volumes:
+  mongodb_data: # Named volume to store MongoDB data

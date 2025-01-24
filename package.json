@@ -1,0 +1,18 @@
+{
+  "name": "migrate-mongo-esm-sample",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "node app.js"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "migrate-mongo": "^11.0.0"
+  }
+}
