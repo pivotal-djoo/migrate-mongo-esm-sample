@@ -12,7 +12,10 @@ Using node version 22.10, migration works as expected.
 
 ## Reproduction steps:
 
+\*\* This project uses pnpm. Install pnpm via `npm -g i pnpm`
+
 1. Run local instance of mongodb using provided [docker-compose.yaml](./docker-compose.yml)
+
 ```bash
 docker compose up -d
 ```
@@ -20,13 +23,13 @@ docker compose up -d
 2. Install node LTS version 22.13 (this example uses [n](https://www.npmjs.com/package/n))
 
 ```bash
-npm i n -g
+pnpm i n -g
 n 22.13
 ```
 
 3. Attempt to apply migrations
 
 ```bash
-npm i
+pnpm i
 npx migrate-mongo up
 ```

@@ -14,5 +14,10 @@
   },
   "devDependencies": {
     "migrate-mongo": "^11.0.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "migrate-mongo@11.0.0": "patches/migrate-mongo@11.0.0.patch"
+    }
   }
 }

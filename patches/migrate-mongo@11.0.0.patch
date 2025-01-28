@@ -1,0 +1,71 @@
+diff --git a/lib/env/config.js b/lib/env/config.js
+index 5ff4a3036766ff0e4c32b41f2dae6a6ac1957d5a..d85d7973070dea81db2ea5425927204fe48b8829 100644
+--- a/lib/env/config.js
++++ b/lib/env/config.js
+@@ -20,6 +20,11 @@ function getConfigPath() {
+   return path.join(process.cwd(), fileOptionValue);
+ }
+ 
++function getModuleExports(module) {
++  // If ESM module format need to return default export
++  return module.default ? module.default : module;
++}
++
+ module.exports = {
+   DEFAULT_CONFIG_FILE_NAME,
+ 
+@@ -63,11 +68,12 @@ module.exports = {
+     }
+     const configPath = getConfigPath();
+     try {
+-      return await Promise.resolve(moduleLoader.require(configPath));
++      const result = await moduleLoader.require(configPath);
++      return getModuleExports(result);
+     } catch (e) {
+       if (e.code === 'ERR_REQUIRE_ESM') {
+         const loadedImport = await moduleLoader.import(url.pathToFileURL(configPath));
+-        return loadedImport.default
++        return getModuleExports(loadedImport);
+       }
+       throw e;
+     }
+diff --git a/test/env/config.test.js b/test/env/config.test.js
+index bacd7dcb69ab3cba4a9e6b58c36b19c8db4a250e..e8cbb0703f9b439f91eb88bb70a510fa8aaccb4c 100644
+--- a/test/env/config.test.js
++++ b/test/env/config.test.js
+@@ -142,5 +142,35 @@ describe("config", () => {
+       await config.read();
+       expect(moduleLoader.import.called).to.equal(true);
+     });
++
++    it("should handle ESM modules with default export", async () => {
++      const expectedConfig = {
++        mongodb: {
++          url: 'mongodb://localhost:27017',
++          databaseName: 'test'
++        }
++      };
++      
++      moduleLoader.require = sinon.stub().resolves({
++        default: expectedConfig
++      });
++      
++      const actual = await config.read();
++      expect(actual).to.deep.equal(expectedConfig);
++    });
++
++    it("should handle regular CommonJS modules", async () => {
++      const expectedConfig = {
++        mongodb: {
++          url: 'mongodb://localhost:27017',
++          databaseName: 'test'
++        }
++      };
++      
++      moduleLoader.require = sinon.stub().resolves(expectedConfig);
++      
++      const actual = await config.read();
++      expect(actual).to.deep.equal(expectedConfig);
++    });
+   });
+ });
